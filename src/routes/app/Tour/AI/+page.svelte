@@ -40,17 +40,18 @@
             day: "numeric",
         });
     }
-    let htmlText: any;
+    let htmlText = marked.parse("Tourist spot suggestions");
+    let htmlText2 = marked.parse("");
     let generatedPrompt: string = "";
     let finalText: string = "No Suggestions";
     async function generateContent() {
         weathers = await getWeather("3", location);
         let prompt = `Give tourist spot suggestions based on the parameters:
-    tourDate: ${tourDate},
-    budget: ${budget} Bangladeshi Taka,
-    location: ${location},
-    transportOption: ${transportOption},
-    tourNature: ${tourNature}`;
+        tourDate: ${tourDate},
+        budget: ${budget} Bangladeshi Taka,
+        location: ${location},
+        transportOption: ${transportOption},
+        tourNature: ${tourNature}`;
 
         console.log("Prompt: " + prompt);
 
@@ -63,9 +64,47 @@
         const text = await response.text();
         finalText = text;
         htmlText = marked.parse(text);
-        console.log("Generated content:", text);
+        // console.log("Generated content:", text);
+        generateSuggestion();
     }
+    let text2: any;
+    let suggestion : any;
+    async function generateSuggestion() {
+        let prompt = `Note: You will be given some information about tour plan. Like  Tour budget, distance,  location,  tourDate, transportOption tourNature.
+You will suggest some Ecommerce Product Name based on that Tour plan
 
+    Output Format:
+    productName : Shoes\n
+    Price: 5000 Taka\n
+    Website to Purchase: www.something.com\n
+
+    productName: backpack\n
+    Price: 70000 Taka\n
+    Website to Purchase: www.something.com\n
+
+    productName: Shirt\n
+    Price : 500 Taka\n
+    Website to Purchase: www.something.com\n
+
+    productName : Pent\n
+    Price : 200 Taka\n
+    Website to Purchase: www.something.com\n\n
+
+        now Give Suggestion for this: 
+        Suggest some  ecommers product based on the parameters:
+        tourDate: ${tourDate},
+        budget: ${budget} Bangladeshi Taka,
+        location: ${location},
+        transportOption: ${transportOption},
+        tourNature: ${tourNature}`;
+        // Generate content based on the constructed prompt
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        text2 = await response.text();
+
+        htmlText2 = marked.parse(text2)
+        // console.log("Generated content:", text2);
+    }
     function handleSubmit() {
         console.log({
             budget,
@@ -79,14 +118,12 @@
 </script>
 
 <main class="container mx-auto p-6 h-screen overflow-auto">
-    <h1 class="text-2xl flex justify-center mb-4">
+    <h1 class="text-3xl flex justify-center mb-4">
         Give Your Requirement to get Perfect Tour Spot
     </h1>
     <div class="flex">
         <form on:submit|preventDefault={handleSubmit} class="flex w-1/4">
-            <div
-                class="space-y-4 items-center shadow-[0_35px_60px_-15px_rgba(0,0,0)]"
-            >
+            <div class="space-y-4 items-center">
                 <label class="block">
                     <span>Date of Tour:</span>
                     <input
@@ -124,38 +161,48 @@
                 </label>
 
                 <label class="block">
-                    <input
-                        type="text"
-                        placeholder="Transport Option"
-                        class="input input-bordered input-info w-full max-w-xs"
+                    <select
+                        class="select select-info w-full max-w-xs text-red"
                         bind:value={transportOption}
-                    />
+                    >
+                        <option disabled selected>Transport Option</option>
+                        <option>Car</option>
+                        <option>Air</option>
+                        <option>Water</option>
+                        <option>Rail</option>
+                        <option>Bus</option>
+                    </select>
                 </label>
 
                 <label class="block">
-                    <input
-                        type="text"
-                        placeholder="Nature of Tour"
-                        class="input input-bordered input-info w-full max-w-xs"
+                    <select
+                        class="select select-info w-full max-w-xs"
                         bind:value={tourNature}
-                    />
+                    >
+                        <option disabled selected>Nature of Tour</option>
+                        <option>Family</option>
+                        <option>Solo</option>
+                    </select>
                 </label>
-
 
                 <button
                     type="submit"
-                    class="btn btn-primary w-full p-5"
+                    class="btn w-full p-5 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded"
                     on:click={generateContent}
-                    >Get Suggetion From AI
+                >
+                    Get Suggetion From AI
                 </button>
             </div>
         </form>
         <div id="right" class="w-1/2 px-4 h-full overflow-scroll">
-            {@html htmlText}
+            <div class="mb-4">{@html htmlText}</div>
+            <h1 class="text-2xl flex justify-center mb-4">Some stuff You can take with you tour</h1>
+            <div>{@html htmlText2}</div>
         </div>
 
         <div id="last" class="w-1/4 p-5">
             {#if weathers}
+                <p>Weather forecast for {location}</p>
                 {#each weathers.forecast.forecastday as day}
                     <div
                         class="weather-day mb-4 p-2 shadow-[0_35px_60px_-15px_rgba(0,0,0)]"
@@ -168,7 +215,7 @@
                     </div>
                 {/each}
             {:else}
-                <p>No weather forecast available</p>
+                <p>Select a Location for weather forecast</p>
             {/if}
         </div>
     </div>
