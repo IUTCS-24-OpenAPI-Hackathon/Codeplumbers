@@ -9,16 +9,14 @@ export const generateUserName = (name: string): string => {
 }
 
 export const getLocation = () => {
-  console.log("looog");
   return new Promise((resolve, reject) => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         position => {
           const userLocation = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude
+            lat: position.coords.latitude,
+            lon: position.coords.longitude
           };
-          console.log(userLocation);
           resolve(userLocation);
         },
         err => {

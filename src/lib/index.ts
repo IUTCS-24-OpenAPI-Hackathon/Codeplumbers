@@ -1,19 +1,40 @@
-export const getPlaces = async (catergories: string, locationName: string) => {
+import { error } from "@sveltejs/kit";
+import { getLocation } from "./utils";
+
+export const getPlaces = async (categories: string, locationName: string) => {
     try {
-        const location = await searchPlace(locationName);
-        console.log("FFF" + location);
+        if(categories === "" || locationName === ""){
+            throw error(400, "Specify the category and LocationName");
+        }
+        let lat: number;
+        let lon: number;
+        if(locationName.toLowerCase() === "my location"){
+            const location: any = await getLocation();
+            lat = location.lat;
+            lon = location.lon;
+            console.log(location);
+        }
+        else{
+            const location: any = await searchPlace(locationName);
+            lat = location.lat;
+            lon = location.lon;
+        }
+
+        const rect = `${lon-0.07},${lat+0.07},${lon+0.07},${lat-0.07}`;
+
+        const apiKey = "37b56c71535b48da909b01dc2bfec8b2";
         const response = await fetch(
-            // `https://api.geoapify.com/v2/places?categories=${catergories}&filter=rect:${rect}&lang=en&limit=20&apiKey=37b56c71535b48da909b01dc2bfec8b2`
-            "https://api.geoapify.com/v2/places?categories=commercial&filter=rect:90.34358338852036,23.907219375419032,90.44181661148184,23.827158625602067&lang=en&limit=20&apiKey=37b56c71535b48da909b01dc2bfec8b2"
+            `https://api.geoapify.com/v2/places?categories=${categories.toLowerCase()}&filter=rect:${rect}&long=en&limit=20&apiKey=${apiKey}`
         );
         const respo = await response.json();
         let places: any[] = [];
         respo.features.forEach((feature: any) => {
-            // console.log(feature.properties);
+            console.table(feature.properties);
             places.push({
                 name: feature.properties.name,
             });
         });
+
         return places;
     } catch (err) {
         console.error("Could not fetch the place: ", err);
@@ -32,6 +53,10 @@ export async function searchPlace(placeName: string): Promise<{ lat: number, lon
         if (data.results.length > 0) {
             const result = data.results[0];
             const { lat, lon } = result;
+            // console.log(lat, lon);
+            if(lat < 0 || lon < 0) {
+                throw error(400, "No place like this");
+            }
             return { lat, lon };
         } else {
             console.error('No results found');
