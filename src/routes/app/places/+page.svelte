@@ -7,6 +7,7 @@
   let lat: number;
   let lon: number;
   let zoom: number;
+  let boundaryArea = "";
 
   async function query() {
     const categories = `${selectedCategoryOfPlace}`;
@@ -44,6 +45,7 @@
         class="input input-bordered"
         placeholder="Give a Location..."
       />
+      <input bind:value={boundaryArea} class="input input-bordered" placeholder="Specify a City or Country">
       <button class="btn btn-secondary" on:click={query}>Search</button>
     </div>
     <Map {lat} {lon} {zoom} />

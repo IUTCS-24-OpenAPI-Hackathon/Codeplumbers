@@ -53,10 +53,7 @@ export async function searchPlace(placeName: string): Promise<{ lat: number, lon
         if (data.results.length > 0) {
             const result = data.results[0];
             const { lat, lon } = result;
-            // console.log(lat, lon);
-            if(lat < 0 || lon < 0) {
-                throw error(400, "No place like this");
-            }
+            console.log("Eigula: ", lat, lon);
             return { lat, lon };
         } else {
             console.error('No results found');
