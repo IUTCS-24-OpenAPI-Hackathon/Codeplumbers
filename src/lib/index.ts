@@ -41,6 +41,24 @@ export const getPlaces = async (categories: string, locationName: string) => {
         return [];
     }
 }
+export const getWeather = async (days: string, locationName: string) => {
+    try {
+        if(days === "" || locationName === ""){
+            throw error(400, "Specify the category and LocationName");
+        }
+
+        const response = await fetch(
+            `https://api.weatherapi.com/v1/forecast.json?key=15c63f8bf94249e689e132213242604&q=${locationName}&days=${days}`
+        );
+        const respo = await response.json();
+        console.log(JSON.stringify(respo))
+
+        return respo;
+    } catch (err) {
+        console.error("Could not fetch the place: ", err);
+        return [];
+    }
+}
 
 export async function searchPlace(placeName: string): Promise<{ lat: number, lon: number } | null> {
     console.table("MyLocation : " + placeName);
