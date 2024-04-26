@@ -3,9 +3,12 @@
     import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
     import Hero from "$lib/components/landing/hero.svelte";
     import Landing from "$lib/components/landing/landing.svelte";
-    import Layout from "../+layout.svelte";
-    import Map from "../places/map.svelte";
+    import Layout from "../../+layout.svelte";
+    import Map from "../../places/map.svelte";
     import { text } from "@sveltejs/kit";
+    import { getWeather } from "$lib";
+    let places: any[] = [];
+    import * as marked from "marked";
 
     let genAI: GoogleGenerativeAI;
     let model: GenerativeModel;
@@ -26,11 +29,22 @@
     let location: string = "";
     let transportOption: string = "";
     let tourNature: string = "";
+    let weathers: any;
 
+    function formatDate(dateString: string | number | Date) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString(undefined, {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+        });
+    }
+    let htmlText: any;
     let generatedPrompt: string = "";
-    let finalText : string = "No Suggestions";
+    let finalText: string = "No Suggestions";
     async function generateContent() {
-        // Construct the prompt string using user input
+        weathers = await getWeather("3", location);
         let prompt = `Give tourist spot suggestions based on the parameters:
     tourDate: ${tourDate},
     budget: ${budget} Bangladeshi Taka,
@@ -48,11 +62,11 @@
         const response = await result.response;
         const text = await response.text();
         finalText = text;
+        htmlText = marked.parse(text);
         console.log("Generated content:", text);
     }
 
     function handleSubmit() {
-        // Handle form submission here
         console.log({
             budget,
             distance,
@@ -64,13 +78,15 @@
     }
 </script>
 
-<main class="container mx-auto p-6 h-screen">
+<main class="container mx-auto p-6 h-screen overflow-auto">
     <h1 class="text-2xl flex justify-center mb-4">
         Give Your Requirement to get Perfect Tour Spot
     </h1>
     <div class="flex">
         <form on:submit|preventDefault={handleSubmit} class="flex w-1/4">
-            <div class="space-y-4">
+            <div
+                class="space-y-4 items-center shadow-[0_35px_60px_-15px_rgba(0,0,0)]"
+            >
                 <label class="block">
                     <span>Date of Tour:</span>
                     <input
@@ -125,13 +141,35 @@
                     />
                 </label>
 
+
                 <button
                     type="submit"
-                    class="btn btn-primary"
-                    on:click={generateContent}>Get Suggetion</button
-                >
+                    class="btn btn-primary w-full p-5"
+                    on:click={generateContent}
+                    >Get Suggetion From AI
+                </button>
             </div>
         </form>
-        <div id="right" class="w-3/4">{finalText}</div>
+        <div id="right" class="w-1/2 px-4 h-full overflow-scroll">
+            {@html htmlText}
+        </div>
+
+        <div id="last" class="w-1/4 p-5">
+            {#if weathers}
+                {#each weathers.forecast.forecastday as day}
+                    <div
+                        class="weather-day mb-4 p-2 shadow-[0_35px_60px_-15px_rgba(0,0,0)]"
+                    >
+                        <h2>{formatDate(day.date)}</h2>
+                        <p>Average Temperature: {day.day.avgtemp_c}°C</p>
+                        <p>Chance of Rain: {day.day.daily_chance_of_rain}%</p>
+                        <p>Humidity: {day.day.avghumidity}%</p>
+                        <img src={day.day.condition.icon} alt="Weather Icon" />
+                    </div>
+                {/each}
+            {:else}
+                <p>No weather forecast available</p>
+            {/if}
+        </div>
     </div>
 </main>
