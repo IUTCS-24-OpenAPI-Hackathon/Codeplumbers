@@ -6,12 +6,13 @@
   let mapContainer: any;
   let map: maplibre.Map;
 
-  export let lat: number = 0;
-  export let lon: number = 0;
-  export let zoom: number = 0;
+  export let lat: number = 40.7128;
+  export let lon: number = -74.006;
+  export let zoom: number = 7;
+  
+  const myAPIKey = "37b56c71535b48da909b01dc2bfec8b2";
 
   onMount(async() => {
-    const myAPIKey = "37b56c71535b48da909b01dc2bfec8b2";
     const mapStyle = "https://maps.geoapify.com/v1/styles/osm-carto/style.json";
     // const location: any = await getLocation();
     const initialState = {
