@@ -1,19 +1,14 @@
 <script lang="ts">
   import { getLocation } from "$lib/utils";
-  import { getPlaces } from "$lib";
+  import { getPlaces, searchPlace } from "$lib";
   let selectedCategoryOfPlace = "";
   let locationName = "my location";
   let places: any[] = [];
 
   async function query() {
+    console.log("Ddd" + JSON.stringify(await searchPlace("Dhaka"), null, 2));
     const catergories = `${selectedCategoryOfPlace}`;
-    let location: any;
-    if (locationName = "my location"){
-        location = await getLocation();
-        console.log(location);
-    }
-    const rect = `${location.latitude-0.1},${location.longitude+0.1},${location.latitude+0.1},${location.longitude-0.1}`;
-    places = await getPlaces(catergories, rect);
+    places = await getPlaces(catergories, locationName);
   }
 </script>
 
@@ -35,7 +30,11 @@
           <option>Park</option>
           <option>Museum</option>
         </select> -->
-      <input bind:value={locationName} class="input input-bordered" placeholder="Give a Location...">
+      <input
+        bind:value={locationName}
+        class="input input-bordered"
+        placeholder="Give a Location..."
+      />
       <button class="btn btn-secondary" on:click={query}>Search</button>
     </div>
     <div>map here</div>
