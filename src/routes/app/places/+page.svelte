@@ -1,40 +1,42 @@
 <script lang="ts">
   import { getLocation } from "$lib/utils";
+  import { getPlaces } from "$lib";
+  let selectedCategoryOfPlace = "";
+  let locationName = "my location";
   let places: any[] = [];
-  async function getPlaces() {
-    const response = await fetch(
-      "https://api.geoapify.com/v2/places?categories=commercial,entertainment.culture&filter=rect:90.34358338852036,23.907219375419032,90.44181661148184,23.827158625602067&lang=en&limit=20&apiKey=37b56c71535b48da909b01dc2bfec8b2"
-    );
-    const respo = await response.json();
-    // console.log(respo.features);
-    let placess: any[] = [];
-    respo.features.forEach((feature: any) => {
-      placess.push({ 
-        name: feature.properties.name
-    });
-      // console.log(feature.properties.name);
-    });
-    console.log(placess);
-    places = placess;
+
+  async function query() {
+    const catergories = `${selectedCategoryOfPlace}`;
+    let location: any;
+    if (locationName = "my location"){
+        location = await getLocation();
+        console.log(location);
+    }
+    const rect = `${location.latitude-0.1},${location.longitude+0.1},${location.latitude+0.1},${location.longitude-0.1}`;
+    places = await getPlaces(catergories, rect);
   }
 </script>
 
 <div class="flex h-screen w-screen">
   <div class="flex flex-col w-5/6 md:my-20 md:mx-20 spacex-10">
     <div>
-      <select class="select select-bordered w-full max-w-xs">
-        <option disabled selected>Specify a Type of Place</option>
+      <select
+        bind:value={selectedCategoryOfPlace}
+        class="select select-bordered w-full max-w-xs"
+      >
+        <option disabled value="">Specify a Type of Place</option>
         <option>Entertainment</option>
-        <option>Park</option>
-        <option>Museum</option>
+        <option>Nature</option>
+        <option>Tourism</option>
       </select>
-      <select class="select select-bordered w-full max-w-xs">
-        <option disabled selected>none</option>
-        <option>Your Location</option>
-        <option>Park</option>
-        <option>Museum</option>
-      </select>
-      <button class="btn btn-secondary" on:click={getPlaces}>Search</button>
+      <!-- <select bind:value={selectedTypeOfPlace} class="select select-bordered w-full max-w-xs">
+          <option disabled value="">Specify a Type of Place</option>
+          <option>Entertainment</option>
+          <option>Park</option>
+          <option>Museum</option>
+        </select> -->
+      <input bind:value={locationName} class="input input-bordered" placeholder="Give a Location...">
+      <button class="btn btn-secondary" on:click={query}>Search</button>
     </div>
     <div>map here</div>
   </div>
