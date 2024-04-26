@@ -8,8 +8,7 @@
     import { text } from "@sveltejs/kit";
     import { getWeather } from "$lib";
     let places: any[] = [];
-    import * as marked from 'marked';
-
+    import * as marked from "marked";
 
     let genAI: GoogleGenerativeAI;
     let model: GenerativeModel;
@@ -41,7 +40,7 @@
             day: "numeric",
         });
     }
-    let htmlText : any;
+    let htmlText: any;
     let generatedPrompt: string = "";
     let finalText: string = "No Suggestions";
     async function generateContent() {
@@ -63,7 +62,7 @@
         const response = await result.response;
         const text = await response.text();
         finalText = text;
-        htmlText = marked.parse(text)
+        htmlText = marked.parse(text);
         console.log("Generated content:", text);
     }
 
@@ -85,7 +84,9 @@
     </h1>
     <div class="flex">
         <form on:submit|preventDefault={handleSubmit} class="flex w-1/4">
-            <div class="space-y-4">
+            <div
+                class="space-y-4 items-center shadow-[0_35px_60px_-15px_rgba(0,0,0)]"
+            >
                 <label class="block">
                     <span>Date of Tour:</span>
                     <input
@@ -140,20 +141,25 @@
                     />
                 </label>
 
+
                 <button
                     type="submit"
-                    class="btn btn-primary"
-                    on:click={generateContent}>Get Suggetion From AI</button>
+                    class="btn btn-primary w-full p-5"
+                    on:click={generateContent}
+                    >Get Suggetion From AI
+                </button>
             </div>
         </form>
         <div id="right" class="w-1/2 px-4 h-full overflow-scroll">
             {@html htmlText}
         </div>
 
-        <div id="last" class="w-1/4 p-4">
+        <div id="last" class="w-1/4 p-5">
             {#if weathers}
                 {#each weathers.forecast.forecastday as day}
-                    <div class="weather-day mb-4">
+                    <div
+                        class="weather-day mb-4 p-2 shadow-[0_35px_60px_-15px_rgba(0,0,0)]"
+                    >
                         <h2>{formatDate(day.date)}</h2>
                         <p>Average Temperature: {day.day.avgtemp_c}°C</p>
                         <p>Chance of Rain: {day.day.daily_chance_of_rain}%</p>
