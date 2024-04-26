@@ -13,7 +13,7 @@
     <div>
 
     </div>
-
+    <a  class="btn btn-ghost text-primary" href="/map"> Show Map </a>
     <div>
         <form action="/auth/logout" method="POST">
             <button type="submit" class="btn btn-ghost text-primary">logout</button>
