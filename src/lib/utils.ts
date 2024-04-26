@@ -9,23 +9,24 @@ export const generateUserName = (name: string): string => {
 }
 
 export const getLocation = () => {
-    let error : any;
+  console.log("looog");
+  return new Promise((resolve, reject) => {
     if (navigator.geolocation) {
-     const location  = navigator.geolocation.getCurrentPosition(
+      navigator.geolocation.getCurrentPosition(
         position => {
           const userLocation = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
           };
-          return userLocation;
+          console.log(userLocation);
+          resolve(userLocation);
         },
         err => {
-          error = err.message;
+          reject(err.message);
         }
-
       );
-      return location;
     } else {
-      error = "Geolocation is not supported by this browser.";
+      reject("Geolocation is not supported by this browser.");
     }
-  };
+  });
+};
