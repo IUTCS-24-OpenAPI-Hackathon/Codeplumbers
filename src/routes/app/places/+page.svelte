@@ -30,7 +30,7 @@
       >
         <option disabled value="">Specify a Type of Place</option>
         <option>Entertainment</option>
-        <option>Nature</option>
+        <option>Natural</option>
         <option>Tourism</option>
       </select>
       <!-- <select bind:value={selectedTypeOfPlace} class="select select-bordered w-full max-w-xs">
@@ -46,9 +46,11 @@
       />
       <button class="btn btn-secondary" on:click={query}>Search</button>
     </div>
-    <Map lat={lat} lon={lon} zoom={zoom}/>
+    <Map {lat} {lon} {zoom} />
   </div>
-  <ul class="hidden md:flex flex-col menu bg-base-200 w-1/4 h-full rounded-box overflow-y-scroll overflow-x-hidden">
+  <ul
+    class="hidden md:flex flex-col menu bg-base-200 w-1/4 h-full rounded-box overflow-y-scroll overflow-x-hidden"
+  >
     <h1 class="text-3xl p-5">Places</h1>
     {#each places as place}
       <li class="btn btn-ghost p-3 text-left">{place.name}</li>
