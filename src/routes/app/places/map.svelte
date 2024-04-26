@@ -1,23 +1,21 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import maplibregl from "maplibre-gl";
 
-  let mapContainer: any;
+  let mapContainer: HTMLDivElement;
   let map: maplibregl.Map;
-
+  let marker: maplibregl.Marker;
   export let lat: number = 40.7128;
   export let lon: number = -74.006;
   export let zoom: number = 7;
-
   const myAPIKey = "37b56c71535b48da909b01dc2bfec8b2";
 
   onMount(async () => {
     const mapStyle = "https://maps.geoapify.com/v1/styles/osm-carto/style.json";
-    // const location: any = await getLocation();
     const initialState = {
       lng: lon,
       lat: lat,
-      zoom: zoom,
+      zoom: 7,
     };
 
     map = new maplibregl.Map({
@@ -27,19 +25,22 @@
       zoom: initialState.zoom,
     });
 
-    const marker = new maplibregl.Marker().setLngLat([lon, lat]).addTo(map);
-
-    map.on("load", () => {
+    map.on("load", async () => {
       if (map.isStyleLoaded()) {
         console.log("Map loaded");
+        marker = new maplibregl.Marker({color: "red"}).setLngLat([lon, lat]).addTo(map);
+        await tick(); // Wait for Svelte to update the DOM
       }
     });
   });
 
-  $: if (map && map.isStyleLoaded()) {
-    console.log("Now: ", lon, lat);
-    map.setCenter([lon, lat]);
-    map.setZoom(zoom);
+  $: {
+    if (map && map.isStyleLoaded() && marker) {
+      console.log("Now: ", lon, lat);
+      marker.setLngLat([lon, lat]);
+      map.setCenter([lon, lat]);
+      map.setZoom(zoom);
+    }
   }
 </script>
 
