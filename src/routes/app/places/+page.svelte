@@ -1,24 +1,59 @@
 <script lang="ts">
-  import Map from "./map.svelte";
+  import maplibregl from "maplibre-gl";
   import { getPlaces, searchPlace } from "$lib";
+  import { tick } from "svelte";
   let selectedCategoryOfPlace = "";
-  let locationName = "my location";
+  let locationName = "";
   let places: any[] = [];
   let lat: number;
   let lon: number;
   let zoom: number;
   let boundaryArea = "";
+  let mapContainer: HTMLDivElement;
+  let map: maplibregl.Map;
 
   async function query() {
     const categories = `${selectedCategoryOfPlace}`;
     places = await getPlaces(categories, locationName);
+    console.log("kottheke:", places);
 
     const location: any = await searchPlace(locationName);
     console.log(location);
     lat = location.lat;
     lon = location.lon;
     zoom = 10;
-    console.log(lat, lon, zoom);
+    loadMap(lat, lon, zoom, places);
+  }
+  const loadMap = (lat: any, lon: any, zoom: any, allPlaces: any) => {
+    const myAPIKey = "37b56c71535b48da909b01dc2bfec8b2";
+    // console.log(lat, lon, zoom);
+    const mapStyle = "https://maps.geoapify.com/v1/styles/osm-carto/style.json";
+    map = new maplibregl.Map({
+      container: mapContainer,
+      style: `${mapStyle}?apiKey=${myAPIKey}`,
+      center: [lon, lat],
+      zoom: zoom,
+    });
+    
+    map.on("idle", () => {
+      map.setCenter([lon, lat]);
+      map.setZoom(zoom);
+    })
+
+    map.on("load", async () => {
+      if (map.isStyleLoaded()) {
+        allPlaces.forEach((place:any) => {
+          const marker = new maplibregl.Marker({color: "red"}).setLngLat([place.lon+0.5, place.lat+0.51]).addTo(map);
+        });
+        await tick(); // Wait for Svelte to update the DOM
+      }
+    });
+  }
+  const addMarker = (lon:number, lat:number) => {
+    lat = lat;
+    lon = lon;
+    console.log("mara khaisi")
+    // loadMap(-12, 90, 20);
   }
 </script>
 
@@ -45,17 +80,26 @@
         class="input input-bordered"
         placeholder="Give a Location..."
       />
-      <input bind:value={boundaryArea} class="input input-bordered" placeholder="Specify a City or Country">
+      <input bind:value={boundaryArea} class="input input-bordered" placeholder="Radius">
       <button class="btn btn-secondary" on:click={query}>Search</button>
     </div>
-    <Map {lat} {lon} {zoom} />
-  </div>
+    <div class="w-full h-full overflow-hidden" bind:this={mapContainer}></div>  </div>
   <ul
     class="hidden md:flex flex-col menu bg-base-200 w-1/4 h-full rounded-box overflow-y-scroll overflow-x-hidden"
   >
     <h1 class="text-3xl p-5">Places</h1>
     {#each places as place}
-      <li class="btn btn-ghost p-3 text-left">{place.name}</li>
+    <div class="collapse bg-base-200">
+      <input type="checkbox" /> 
+      <div class="collapse-title font-medium">
+        {place.name}
+      </div>
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div class="collapse-content text-xs" on:click={() => addMarker(place.lon, place.lat)}> 
+        <p>lng: {place.lon}N </p> <p> lat: {place.lat}E</p>
+      </div>
+    </div>
     {/each}
   </ul>
 </div>

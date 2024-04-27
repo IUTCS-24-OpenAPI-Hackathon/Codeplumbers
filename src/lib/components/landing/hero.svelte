@@ -6,10 +6,10 @@
     <div class="md:w-1/2 md:mt-80 md:px-20 md:text-left text-center space-y-5">
         <div class="space-y-2">
             <h1 class="text-4xl">
-                Welcome to the OpenSource SvelteKit Hackathon Template
+                Welcome to TourBuddies Where You can Plan Your Tours Conveniently
             </h1>
             <p>
-                Use this BoylerPlate in your hackathon
+                Spend your vacation easy and fun 
             </p>
         </div>
         <div class="gap-2">

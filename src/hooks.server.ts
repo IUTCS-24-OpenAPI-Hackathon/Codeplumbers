@@ -10,7 +10,7 @@ export const handle = async ({ event, resolve }: {event: any, resolve: any}): Pr
         longitude: null
     }
 
-    event.locals.title = "Hackathon";
+    event.locals.title = "TourBuddies";
     event.locals.pb = new PocketBase("https://hackathonbas.pockethost.io/");
     event.locals.pb.authStore.loadFromCookie(event.request.headers.get("cookie") || "");
 
