@@ -1,7 +1,7 @@
 import { error } from "@sveltejs/kit";
 import { getLocation } from "./utils";
 
-export const getPlaces = async (categories: string, locationName: string) => {
+export const getPlaces = async (categories: string, locationName: string, radius: number) => {
     try {
         if(categories === "" || locationName === ""){
             throw error(400, "Specify the category and LocationName");
@@ -20,11 +20,12 @@ export const getPlaces = async (categories: string, locationName: string) => {
             lon = location.lon;
         }
 
-        const rect = `${lon-0.07},${lat+0.07},${lon+0.07},${lat-0.07}`;
+        const rect = `${lon},${lat}`;
 
         const apiKey = "37b56c71535b48da909b01dc2bfec8b2";
         const response = await fetch(
-            `https://api.geoapify.com/v2/places?categories=${categories.toLowerCase()}&filter=rect:${rect}&long=en&limit=20&apiKey=${apiKey}`
+            // `https://api.geoapify.com/v2/places?categories=${categories.toLowerCase()}&filter=rect:${rect}&long=en&limit=20&apiKey=${apiKey}`
+            `https://api.geoapify.com/v2/places?categories=commercial&filter=circle:${rect},${radius}&bias=proximity:${rect}&limit=20&apiKey=37b56c71535b48da909b01dc2bfec8b2`
         );
         const respo = await response.json();
         let places: any[] = [];

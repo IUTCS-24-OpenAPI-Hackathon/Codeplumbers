@@ -8,13 +8,13 @@
   let lat: number;
   let lon: number;
   let zoom: number;
-  let boundaryArea = "";
+  let radius: number;
   let mapContainer: HTMLDivElement;
   let map: maplibregl.Map;
 
   async function query() {
     const categories = `${selectedCategoryOfPlace}`;
-    places = await getPlaces(categories, locationName);
+    places = await getPlaces(categories, locationName, radius);
     console.log("kottheke:", places);
 
     const location: any = await searchPlace(locationName);
@@ -80,7 +80,7 @@
         class="input input-bordered"
         placeholder="Give a Location..."
       />
-      <input bind:value={boundaryArea} class="input input-bordered" placeholder="Radius">
+      <input bind:value={radius} class="input input-bordered" placeholder="Radius">
       <button class="btn btn-secondary" on:click={query}>Search</button>
     </div>
     <div class="w-full h-full overflow-hidden" bind:this={mapContainer}></div>  </div>

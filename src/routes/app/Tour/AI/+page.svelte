@@ -70,8 +70,12 @@
   async function generateSuggestion() {
     const pb = new PocketBase("https://hackathonbas.pockethost.io");
     const res = await pb.collection("posts").getList(1, 10);
+    
 
-    posts = res.items;
+    posts = res.items.filter(function(post:any) {
+      return post.destination.toLowerCase() === location.toLowerCase()
+    });
+    console.log(posts);
     let prompt = `Note: You will be given some information about tour plan. Like  Tour budget, distance,  location,  tourDate, transportOption tourNature.
 You will suggest some Ecommerce Product Name based on that Tour plan
 
