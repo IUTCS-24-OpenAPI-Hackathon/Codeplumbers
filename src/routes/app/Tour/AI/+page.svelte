@@ -68,6 +68,10 @@
   let text2: any;
   let suggestion: any;
   async function generateSuggestion() {
+    const pb = new PocketBase("https://hackathonbas.pockethost.io");
+    const res = await pb.collection("posts").getList(1, 10);
+
+    posts = res.items;
     let prompt = `Note: You will be given some information about tour plan. Like  Tour budget, distance,  location,  tourDate, transportOption tourNature.
 You will suggest some Ecommerce Product Name based on that Tour plan
 
@@ -94,17 +98,17 @@ You will suggest some Ecommerce Product Name based on that Tour plan
         budget: ${budget} Bangladeshi Taka,
         location: ${location},
         transportOption: ${transportOption},
-        tourNature: ${tourNature}`;
+        tourNature: ${tourNature}
+
+    You can use the following experiences shared by some people:
+    ${posts}
+    `;
     // Generate content based on the constructed prompt
     const result = await model.generateContent(prompt);
     const response = result.response;
     text2 = response.text();
 
     htmlText2 = marked.parse(text2);
-    const pb = new PocketBase("https://hackathonbas.pockethost.io");
-    const res = await pb.collection("posts").getList(1, 10);
-
-    posts = res.items;
     // console.log("Generated content:", text2);
   }
   function handleSubmit() {
