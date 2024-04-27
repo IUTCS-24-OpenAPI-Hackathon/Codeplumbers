@@ -15,7 +15,7 @@
     const initialState = {
       lng: lon,
       lat: lat,
-      zoom: 7,
+      zoom: zoom,
     };
 
     map = new maplibregl.Map({
@@ -24,11 +24,16 @@
       center: [initialState.lng, initialState.lat],
       zoom: initialState.zoom,
     });
+    
+    map.on("idle", () => {
+      map.setCenter([lon, lat]);
+      map.setZoom(zoom);
+    })
 
     map.on("load", async () => {
       if (map.isStyleLoaded()) {
         console.log("Map loaded");
-        marker = new maplibregl.Marker({color: "red"}).setLngLat([lon, lat]).addTo(map);
+        marker = new maplibregl.Marker({color: "red"}).setLngLat([lon+0.35, lat+0.41]).addTo(map);
         await tick(); // Wait for Svelte to update the DOM
       }
     });
@@ -36,10 +41,10 @@
 
   $: {
     if (map && map.isStyleLoaded() && marker) {
-      console.log("Now: ", lon, lat);
-      marker.setLngLat([lon, lat]);
-      map.setCenter([lon, lat]);
-      map.setZoom(zoom);
+      // console.log("Now: ", lon, lat);
+      marker.setLngLat([lon+0.35, lat+0.41]).addTo(map);
+      // map.setCenter([lon, lat]);
+      // map.setZoom(zoom);
     }
   }
 </script>
